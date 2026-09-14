@@ -1,0 +1,2710 @@
+{
+  "name": "davines-b2b-portfolio-architecture",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -176,
+        336
+      ],
+      "id": "portfolio-node-01",
+      "name": "Download file1",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "googleApi portfolio placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -16,
+        336
+      ],
+      "id": "portfolio-node-02",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portfolio-safe placeholder: document chunk preparation for knowledge ingestion."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        320
+      ],
+      "id": "portfolio-node-03",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f001",
+              "name": "user_question",
+              "value": "={{ $json.body.whatsappInboundMessage.text?.body || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f002",
+              "name": "chatId",
+              "value": "={{ $json.body.whatsappInboundMessage.from.replace(/^\\+/, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "f003",
+              "name": "userName",
+              "value": "={{ $json.body.whatsappInboundMessage.customerProfile?.name || 'Cliente' }}",
+              "type": "string"
+            },
+            {
+              "id": "f004",
+              "name": "userId",
+              "value": "={{ $json.body.whatsappInboundMessage.from }}",
+              "type": "string"
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "name": "messageType",
+              "value": "={{ ($json.body.whatsappInboundMessage.type === 'audio' ? 'voice' : $json.body.whatsappInboundMessage.type || 'text') }}",
+              "type": "string"
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "name": "fileId",
+              "value": "={{ $json.body.whatsappInboundMessage.audio?.link || $json.body.whatsappInboundMessage.voice?.link || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "name": "imageUrl",
+              "value": "={{ null }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": "={{ false }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -752,
+        1600
+      ],
+      "id": "portfolio-node-04",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ 'Portfolio-safe runtime context and routing instructions intentionally omitted.' }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Portfolio-safe system prompt omitted. Production version contains B2B conversation policy, product knowledge guardrails, lead qualification, anti-repetition rules, human handoff, and structured data extraction."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -944,
+        1200
+      ],
+      "id": "portfolio-node-05",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 2000,
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1056,
+        1440
+      ],
+      "id": "portfolio-node-06",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "REDACTED",
+          "name": "openAiApi portfolio placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        224
+      ],
+      "id": "portfolio-node-07",
+      "name": "Supabase Vector Store2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "REDACTED",
+          "name": "supabaseApi portfolio placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        336,
+        464
+      ],
+      "id": "portfolio-node-08",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "REDACTED",
+          "name": "openAiApi portfolio placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "=={{ $json.pageContent }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "davines_crm"
+              },
+              {
+                "name": "tipo",
+                "value": "conocimiento"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        512,
+        432
+      ],
+      "id": "portfolio-node-09",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portfolio-safe placeholder: deterministic intent classification and guardrails for B2B/B2C, support, pricing, technical needs, commercial intent, and invalid inputs."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        1808
+      ],
+      "id": "portfolio-node-10",
+      "name": "Clasificador F"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portfolio-safe placeholder: state-aware router selecting conversation, multimedia/RAG, lead-capture, existing-client, B2C, and escalation modes."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        1888
+      ],
+      "id": "portfolio-node-11",
+      "name": "Router F"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Portfolio-safe placeholder: parses the model response, strips metadata tags, prepares outbound message and structured lead fields."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        752
+      ],
+      "id": "portfolio-node-12",
+      "name": "Post Agente F5-F",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -800,
+        1776
+      ],
+      "id": "portfolio-node-13",
+      "name": "Embeddings OpenAI3",
+      "credentials": {
+        "openAiApi": {
+          "id": "REDACTED",
+          "name": "openAiApi portfolio placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool as the official Davines Peru knowledge source for all product, technical, treatment, positioning, protocol, and B2B commercial information related to professional salons.\n\nYou must call this tool whenever a question involves:\n\nProduct lines or line comparisons\n\nIngredients or formulations\n\nTechnical treatments or protocols\n\nSalon recommendations\n\nPositioning or differentiation\n\nCommercial orientation for B2B salons\n\nAlways retrieve relevant documents before answering product-related or technical questions.\n\nDo not answer from general knowledge or internal assumptions.\n\nIf the knowledge base does not contain sufficient information, clearly state that validation with the commercial team is required.\n\nThis tool contains the authoritative information for professional Davines advisory responses.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 5,
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -784,
+        1424
+      ],
+      "id": "portfolio-node-14",
+      "name": "Supabase Vector Store3",
+      "notesInFlow": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "REDACTED",
+          "name": "supabaseApi portfolio placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.systemOverride }}",
+                    "rightValue": "APOSTOLADO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "PORTFOLIO_SAFE_ID"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "PORTFOLIO_SAFE_ID",
+                    "leftValue": "={{ $json.systemOverride }}",
+                    "rightValue": "BIENVENIDA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "PORTFOLIO_SAFE_ID",
+                    "leftValue": "={{ $json.systemOverride }}",
+                    "rightValue": "ALERTA_CADENA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "PORTFOLIO_SAFE_ID",
+                    "leftValue": "={{ $json.systemOverride }}",
+                    "rightValue": "MULTIMEDIA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "PORTFOLIO_SAFE_ID",
+                    "leftValue": "={{ $json.systemOverride }}",
+                    "rightValue": "CONVERSACION",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "PORTFOLIO_SAFE_ID",
+                    "leftValue": "={{ $json.systemOverride }}",
+                    "rightValue": " AI Agent",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "PORTFOLIO_SAFE_ID",
+                    "leftValue": "={{ $json.systemOverride }}",
+                    "rightValue": "B2C",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "PORTFOLIO_SAFE_ID",
+                    "leftValue": "={{ $json.systemOverride }}",
+                    "rightValue": "INFO_GENERAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1264,
+        1104
+      ],
+      "id": "portfolio-node-15",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portfolio-safe placeholder: media/file preparation and routing."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        1392
+      ],
+      "id": "portfolio-node-16",
+      "name": "Code in JavaScrip"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portfolio-safe placeholder: chooses portfolio media/assets, prevents duplicate sends, and handles price/catalog document routing."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        1296
+      ],
+      "id": "portfolio-node-17",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "list",
+          "cachedResultName": "CRM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "list",
+          "cachedResultName": "LEADS"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "ChatID"
+          ],
+          "schema": [
+            {
+              "id": "ChatID",
+              "displayName": "ChatID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Usuario",
+              "displayName": "Usuario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TipoPerfil",
+              "displayName": "TipoPerfil",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EstadoLead",
+              "displayName": "EstadoLead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre Salon",
+              "displayName": "Nombre Salon",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Distrito",
+              "displayName": "Distrito",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Ciudad",
+              "displayName": "Ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telefono",
+              "displayName": "Telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TelefonoFuente",
+              "displayName": "TelefonoFuente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Correo",
+              "displayName": "Correo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lineas",
+              "displayName": "Lineas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Prioridad",
+              "displayName": "Prioridad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensajeAsesor",
+              "displayName": "mensajeAsesor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Obs:",
+              "displayName": "Obs:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CanalPreferido",
+              "displayName": "CanalPreferido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MarcaActual",
+              "displayName": "MarcaActual",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Driver",
+              "displayName": "Driver",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estilistas",
+              "displayName": "Estilistas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fileId",
+              "displayName": "fileId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fileName",
+              "displayName": "fileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sendFile",
+              "displayName": "sendFile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "caption",
+              "displayName": "caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        752
+      ],
+      "id": "portfolio-node-18",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "googleApi portfolio placeholder"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.enviarVideo }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.videoUrl }} ",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        1184
+      ],
+      "id": "portfolio-node-19",
+      "name": "If7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.enviarCatalogo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        1408
+      ],
+      "id": "portfolio-node-20",
+      "name": "If8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.messageType }}",
+              "rightValue": "voice",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -496,
+        1600
+      ],
+      "id": "portfolio-node-21",
+      "name": "If9"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "es"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        1584
+      ],
+      "id": "portfolio-node-22",
+      "name": "Transcribe a recording1",
+      "credentials": {
+        "openAiApi": {
+          "id": "REDACTED",
+          "name": "openAiApi portfolio placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "name": "user_question",
+              "value": "={{ (() => {\n  const texto = ($json.text || $json.transcription || '').toString().trim();\n  if (!texto || texto === 'null' || texto === 'undefined' || texto.trim().length < 3) return '__AUDIO_VACIO__';\n  \n  let t = texto\n    // OI — SOLO cuando se menciona explícitamente como línea/producto\n    // Casos legítimos: \"la oi\", \"línea oi\", \"sobre oi\", \"aceite oi\", \"productos oi\"\n    .replace(/\\b(l[ií]nea|sobre|aceite|productos?|tratamiento|la|del?)\\s+(oi|o\\.i\\.?)\\b/gi, '$1 OI')\n    // \"oi\" al inicio de frase como nombre de línea (ej: \"oi es muy buena\")\n    .replace(/^(oi|o\\.i\\.?)\\s+/i, 'OI ')\n    // \"oi\" después de coma o punto (ej: \"quiero saber de oi, \")  \n    .replace(/[,\\.]\\s*(oi|o\\.i\\.?)\\b/gi, ', OI')\n    // NUNCA reemplazar \"hoy\", \"voy\", \"soy\", \"estoy\", \"doy\", \"boy\" → los dejamos como están\n\n    // NOUNOU\n    .replace(/\\bnu\\s*nu\\b/gi, 'NOUNOU')\n    .replace(/\\bnu\\s*nou\\b/gi, 'NOUNOU')\n    .replace(/\\bnunou\\b/gi, 'NOUNOU')\n    .replace(/\\bno\\s*nu\\b/gi, 'NOUNOU')\n    // NOURISHING\n    .replace(/\\bno\\s*breachin\\b/gi, 'NOURISHING')\n    .replace(/\\bno\\s*breach\\b/gi, 'NOURISHING')\n    .replace(/\\bnobrichin\\b/gi, 'NOURISHING')\n    .replace(/\\bno\\s*brichin\\b/gi, 'NOURISHING')\n    .replace(/\\bnourish\\b/gi, 'NOURISHING')\n    // MOMO\n    .replace(/\\bmo\\s*mo\\b/gi, 'MOMO')\n    .replace(/\\bmumu\\b/gi, 'MOMO')\n    .replace(/\\bmumo\\b/gi, 'MOMO')\n    // MELU\n    .replace(/\\bmellu\\b/gi, 'MELU')\n    .replace(/\\bmelu\\b/gi, 'MELU')\n    // MINU\n    .replace(/\\bminnu\\b/gi, 'MINU')\n    .replace(/\\bminiu\\b/gi, 'MINU')\n    // DEDE\n    .replace(/\\bde\\s*de\\b/gi, 'DEDE')\n    // PURIFYING\n    .replace(/\\bpurifain\\b/gi, 'PURIFYING')\n    .replace(/\\bpurifyin\\b/gi, 'PURIFYING')\n    .replace(/\\bpurifyng\\b/gi, 'PURIFYING')\n    .replace(/\\bpurificando\\b/gi, 'PURIFYING')\n    // ENERGIZING\n    .replace(/\\benerjizing\\b/gi, 'ENERGIZING')\n    .replace(/\\benergizin\\b/gi, 'ENERGIZING')\n    .replace(/\\benerjizin\\b/gi, 'ENERGIZING')\n    .replace(/\\benergy\\s*design\\b/gi, 'ENERGIZING')\n    .replace(/\\benergy\\s*sign\\b/gi, 'ENERGIZING')\n    .replace(/\\benergizin\\b/gi, 'ENERGIZING')\n    .replace(/\\benergizing\\b/gi, 'ENERGIZING')\n    .replace(/\\bener\\s*sizing\\b/gi, 'ENERGIZING')\n    .replace(/\\bener\\s*gizing\\b/gi, 'ENERGIZING')\n    // CALMING\n    .replace(/\\bkalming\\b/gi, 'CALMING')\n    .replace(/\\bcalmin\\b/gi, 'CALMING')\n    // REPLUMPING\n    .replace(/\\breplunpin\\b/gi, 'REPLUMPING')\n    .replace(/\\breplumpin\\b/gi, 'REPLUMPING')\n    .replace(/\\breplopin\\b/gi, 'REPLUMPING')\n    .replace(/\\breplonping\\b/gi, 'REPLUMPING')\n    .replace(/\\bremplamping\\b/gi, 'REPLUMPING')\n    .replace(/\\bremplapin\\b/gi, 'REPLUMPING')\n    .replace(/\\bremplampin\\b/gi, 'REPLUMPING')\n    // REBALANCING\n    .replace(/\\brebalancin\\b/gi, 'REBALANCING')\n    .replace(/\\brebalansing\\b/gi, 'REBALANCING')\n    // DETOXIFYING\n    .replace(/\\bdetoxifyin\\b/gi, 'DETOXIFYING')\n    .replace(/\\bdetoksifyin\\b/gi, 'DETOXIFYING')\n    .replace(/\\bdetox\\b/gi, 'DETOXIFYING')\n    // LOVE CURL\n    .replace(/\\blove\\s*cur\\b/gi, 'LOVE CURL')\n    .replace(/\\blove\\s*curl\\b/gi, 'LOVE CURL')\n    // LOVE SMOOTHING\n    .replace(/\\blove\\s*smoot\\b/gi, 'LOVE SMOOTHING')\n    .replace(/\\blove\\s*smoothin\\b/gi, 'LOVE SMOOTHING')\n    .replace(/\\blove\\s*smoothing\\b/gi, 'LOVE SMOOTH')\n    .replace(/\\bdamor\\s*inside\\b/gi, 'MORE INSIDE')\n    .replace(/\\bdamore\\s*inside\\b/gi, 'MORE INSIDE')\n    .replace(/\\bmore\\s*inside\\b/gi, 'MORE INSIDE')\n    .replace(/\\bmore\\s*insaid\\b/gi, 'MORE INSIDE')\n// DECOLORACIÓN (corrección de audio)\n.replace(/\\bde\\s+coloraci[oó]n\\b/gi, 'decoloración')\n.replace(/\\bde\\s+color\\b/gi, 'decoloración')\n// NOUNOU adicionales\n.replace(/\\bdebiub\\b/gi, 'DAVINES')\n.replace(/\\bnew\\s*rich\\w*/gi, 'NOURISHING')\n// THE CENTURY OF LIGHT adicionales\n.replace(/\\bcentury\\s*of\\s*the\\s*light\\b/gi, 'THE CENTURY OF LIGHT')\n.replace(/\\bthe\\s*century\\b/gi, 'THE CENTURY OF LIGHT')\n    // THE CENTURY OF LIGHT\n    .replace(/\\bcentury\\s*of\\s*lite\\b/gi, 'THE CENTURY OF LIGHT')\n    .replace(/\\bcentury\\s*light\\b/gi, 'THE CENTURY OF LIGHT')\n    .replace(/\\bcentro\\s*de\\s*la\\s*luz\\b/gi, 'THE CENTURY OF LIGHT')\n    .replace(/\\bcentury\\b/gi, 'THE CENTURY OF LIGHT')\n    // VIEW\n    .replace(/\\bviewport\\b/gi, 'VIEW')\n    .replace(/\\bview\\s*port\\b/gi, 'VIEW')\n    // MORE INSIDE\n    .replace(/\\bmore\\s*insaid\\b/gi, 'MORE INSIDE')\n    .replace(/\\bmore\\s*insid\\b/gi, 'MORE INSIDE');\n\n  return t;\n})() }}",
+              "type": "string"
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "name": "=chatId",
+              "value": "={{ $('Edit Fields2').first().json.chatId }}",
+              "type": "string"
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "name": "userName",
+              "value": "={{ $('Edit Fields2').first().json.userName }}",
+              "type": "string"
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "name": "userId",
+              "value": "={{ $('Edit Fields2').first().json.userId }}",
+              "type": "string"
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "name": "messageType",
+              "value": "=voice",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        1584
+      ],
+      "id": "portfolio-node-23",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "separator": "\\n---\\n",
+        "chunkSize": 3000
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        480,
+        608
+      ],
+      "id": "portfolio-node-24",
+      "name": "Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.user_question }}",
+              "rightValue": "__AUDIO_VACIO__",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        1600
+      ],
+      "id": "portfolio-node-25",
+      "name": "If11"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook1').first().json.body.whatsappInboundMessage.from }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -896,
+        1440
+      ],
+      "id": "portfolio-node-26",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "REDACTED",
+          "name": "postgres portfolio placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.portfolioSafeUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        880,
+        1392
+      ],
+      "id": "portfolio-node-27",
+      "name": "HTTP Request8"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "portfolio-safe-webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1168,
+        1600
+      ],
+      "id": "portfolio-node-28",
+      "name": "Webhook1",
+      "webhookId": "PORTFOLIO_SAFE_WEBHOOK"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -256,
+        1232
+      ],
+      "id": "portfolio-node-29",
+      "name": "HTTP Request9",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        688,
+        1600
+      ],
+      "id": "portfolio-node-30",
+      "name": "HTTP Request10"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        880,
+        1168
+      ],
+      "id": "portfolio-node-31",
+      "name": "HTTP Request11"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1120,
+        1392
+      ],
+      "id": "portfolio-node-32",
+      "name": "HTTP Request12"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.portfolioSafeUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -176,
+        1584
+      ],
+      "id": "portfolio-node-33",
+      "name": "GET A FILE1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.portfolioSafeUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        672,
+        1168
+      ],
+      "id": "portfolio-node-34",
+      "name": "HTTP Request13"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1088,
+        1168
+      ],
+      "id": "portfolio-node-35",
+      "name": "HTTP Request14"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.body.type }}",
+              "rightValue": "whatsapp.inbound_message.received",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1008,
+        1600
+      ],
+      "id": "portfolio-node-36",
+      "name": "If12"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1152,
+        736
+      ],
+      "id": "portfolio-node-37",
+      "name": "HTTP Request15",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portfolio-safe placeholder: post-processing / persistence preparation."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        752
+      ],
+      "id": "portfolio-node-38",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.mensajeAsesor }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        976,
+        752
+      ],
+      "id": "portfolio-node-39",
+      "name": "If13"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "list",
+          "cachedResultName": "CRM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "REDACTED",
+          "mode": "list",
+          "cachedResultName": "LEADS"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ChatID",
+              "lookupValue": "={{ $json.chatId.toString().replace(/^=+/, '') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "portfolio-node-40",
+      "name": "Get ChatID from Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -16,
+        1856
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "REDACTED",
+          "name": "googleApi portfolio placeholder"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "sesiones_bot",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Clasificador F').first().json.chatId.toString().replace(/^=+/, '') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        192,
+        1856
+      ],
+      "id": "portfolio-node-41",
+      "name": "Get a row",
+      "retryOnFail": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "REDACTED",
+          "name": "supabaseApi portfolio placeholder"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portfolio-safe placeholder: normalizes and accumulates lead/contact fields before persistence."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        800
+      ],
+      "id": "portfolio-node-42",
+      "name": "Guardar Datos Parciales"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $('Get a row').first().json.chat_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        96,
+        752
+      ],
+      "id": "portfolio-node-43",
+      "name": "¿Existe en Supabase?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "sesiones_bot",
+        "filterType": "string",
+        "filterString": "=chat_id=eq.{{ $('Guardar Datos Parciales').first().json.chat_id }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "tipo",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.tipo }}"
+            },
+            {
+              "fieldId": "salon",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.salon }}"
+            },
+            {
+              "fieldId": "ciudad",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.ciudad }}"
+            },
+            {
+              "fieldId": "distrito",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.distrito }}"
+            },
+            {
+              "fieldId": "estilistas",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.estilistas }}"
+            },
+            {
+              "fieldId": "telefono",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.telefono }}"
+            },
+            {
+              "fieldId": "contacto",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.contacto }}"
+            },
+            {
+              "fieldId": "marca",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.marca }}"
+            },
+            {
+              "fieldId": "driver",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.driver }}"
+            },
+            {
+              "fieldId": "horario",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.horario }}"
+            },
+            {
+              "fieldId": "lineas",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.lineas }}"
+            },
+            {
+              "fieldId": "lineas_pendientes",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.lineas_pendientes }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "correo",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.correo }}"
+            },
+            {
+              "fieldId": "fase_actual",
+              "fieldValue": "={{ $('Router F').first().json.faseActual || 'exploracion' }}"
+            },
+            {
+              "fieldId": "estado_conversacion",
+              "fieldValue": "={{ $('Router F').first().json.faseActual === 'captura' ? 'captura' : 'activo' }}"
+            },
+            {
+              "fieldId": "bot_pausado",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.bot_pausado }}"
+            },
+            {
+              "fieldId": "asesor_solicitado",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.asesor_solicitado }}"
+            },
+            {
+              "fieldId": "estado",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.estado || $('Get a row').first().json.estado }}"
+            },
+            {
+              "fieldId": "multimedia_enviado",
+              "fieldValue": "={{ (() => { try { const lineaSent = $('Code in JavaScript4').first().json.lineaNombre; if (!lineaSent || lineaSent === 'null') return $('Get a row').first().json.multimedia_enviado || '[]'; const existing = JSON.parse($('Get a row').first().json.multimedia_enviado || '[]'); if (!existing.includes(lineaSent)) existing.push(lineaSent); return JSON.stringify(existing); } catch(e) { return $('Get a row').first().json.multimedia_enviado || '[]'; } })() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        272,
+        656
+      ],
+      "id": "portfolio-node-44",
+      "name": "Update a row",
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "REDACTED",
+          "name": "supabaseApi portfolio placeholder"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "sesiones_bot",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "chat_id",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.chat_id }}"
+            },
+            {
+              "fieldId": "tipo",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.tipo }}"
+            },
+            {
+              "fieldId": "salon",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.salon }}"
+            },
+            {
+              "fieldId": "ciudad",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.ciudad }}"
+            },
+            {
+              "fieldId": "distrito",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.distrito }}"
+            },
+            {
+              "fieldId": "estilistas",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.estilistas }}"
+            },
+            {
+              "fieldId": "telefono",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.telefono }}"
+            },
+            {
+              "fieldId": "correo",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.correo }}"
+            },
+            {
+              "fieldId": "contacto",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.contacto }}"
+            },
+            {
+              "fieldId": "marca",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.marca }}"
+            },
+            {
+              "fieldId": "driver",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.driver }}"
+            },
+            {
+              "fieldId": "horario",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.horario }}"
+            },
+            {
+              "fieldId": "lineas",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.lineas }}"
+            },
+            {
+              "fieldId": "lineas_pendientes",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.lineas_pendientes }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "fase_actual",
+              "fieldValue": "={{ $('Router F').first().json.faseActual || 'exploracion' }}"
+            },
+            {
+              "fieldId": "estado_conversacion",
+              "fieldValue": "={{ $('Router F').first().json.faseActual === 'captura' ? 'captura' : 'bienvenida' }}"
+            },
+            {
+              "fieldId": "bot_pausado",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.bot_pausado }}"
+            },
+            {
+              "fieldId": "asesor_solicitado",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.asesor_solicitado }}"
+            },
+            {
+              "fieldId": "estado",
+              "fieldValue": "={{ $('Guardar Datos Parciales').first().json.estado }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        272,
+        880
+      ],
+      "id": "portfolio-node-45",
+      "name": "Create a row",
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "REDACTED",
+          "name": "supabaseApi portfolio placeholder"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ false }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -496,
+        832
+      ],
+      "id": "portfolio-node-46",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -336,
+        672
+      ],
+      "id": "portfolio-node-47",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portfolio-safe placeholder: outbound response cleanup / formatting."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        1024
+      ],
+      "id": "portfolio-node-48",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "sesiones_bot",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ ($('Webhook1').first().json.body.whatsappInboundMessage.from || '').toString().replace(/^\\++/, '') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1296,
+        496
+      ],
+      "id": "portfolio-node-49",
+      "name": "Get Bienvenida Row",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "REDACTED",
+          "name": "supabaseApi portfolio placeholder"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ (!$json.chat_id).toString() }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1072,
+        496
+      ],
+      "id": "portfolio-node-50",
+      "name": "¿Primer Mensaje?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -848,
+        416
+      ],
+      "id": "portfolio-node-51",
+      "name": "HTTP Texto Bienvenida",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/PORTFOLIO_SAFE_ENDPOINT",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "USE_N8N_CREDENTIAL"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "PORTFOLIO_SAFE_BODY_OMITTED",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -624,
+        400
+      ],
+      "id": "portfolio-node-52",
+      "name": "HTTP PDF Catálogo",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "sesiones_bot",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "chat_id",
+              "fieldValue": "={{ ($('Webhook1').first().json.body.whatsappInboundMessage.from || '').toString().replace(/^\\++/, '') }}"
+            },
+            {
+              "fieldId": "estado_conversacion",
+              "fieldValue": "bienvenida"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        400
+      ],
+      "id": "portfolio-node-53",
+      "name": "Crear Fila Bienvenida",
+      "credentials": {
+        "supabaseApi": {
+          "id": "REDACTED",
+          "name": "supabaseApi portfolio placeholder"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.bot_pausado }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "name": "filter.operator.true"
+              }
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.asesor_solicitado }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "name": "filter.operator.true"
+              }
+            },
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ $json.estado }}",
+              "rightValue": "HUMANO",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        368,
+        1888
+      ],
+      "id": "portfolio-node-54",
+      "name": "IF Bot Pausado"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "PORTFOLIO_SAFE_ID",
+              "leftValue": "={{ \n  ['MULTIMEDIA', 'BIENVENIDA', 'INFO_GENERAL'].includes($('Router F').first().json.systemOverride)\n  && $('Router F').first().json.faseActual !== 'captura'\n  && $('Router F').first().json.enModoCaptura !== true\n}}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -32,
+        1280
+      ],
+      "id": "portfolio-node-55",
+      "name": "If10"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Get Bienvenida Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clasificador F": {
+      "main": [
+        [
+          {
+            "node": "Get ChatID from Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router F": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Agente F5-F": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store3": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScrip": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "If7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "If13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If7": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request13",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If8": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScrip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If9": {
+      "main": [
+        [
+          {
+            "node": "GET A FILE1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Clasificador F",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "If11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If11": {
+      "main": [
+        [
+          {
+            "node": "Clasificador F",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request8": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "If12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request9": {
+      "main": [
+        [
+          {
+            "node": "Guardar Datos Parciales",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request11": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET A FILE1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request13": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request14": {
+      "main": [
+        [
+          {
+            "node": "If8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If12": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If13": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get ChatID from Sheets": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Bot Pausado": {
+      "main": [
+        [
+          {
+            "node": "Router F",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Router F",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "IF Bot Pausado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Datos Parciales": {
+      "main": [
+        [
+          {
+            "node": "¿Existe en Supabase?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Existe en Supabase?": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        [
+          {
+            "node": "Post Agente F5-F",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Post Agente F5-F",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Bienvenida Row": {
+      "main": [
+        [
+          {
+            "node": "¿Primer Mensaje?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Primer Mensaje?": {
+      "main": [
+        [
+          {
+            "node": "HTTP Texto Bienvenida",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Texto Bienvenida": {
+      "main": [
+        [
+          {
+            "node": "HTTP PDF Catálogo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP PDF Catálogo": {
+      "main": [
+        [
+          {
+            "node": "Crear Fila Bienvenida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If10": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "PORTFOLIO_SAFE",
+  "meta": {
+    "instanceId": "PORTFOLIO_SAFE",
+    "portfolioNotice": "Sanitized structural snapshot. Production credentials, private URLs, customer data, internal IDs, and executable private business logic are omitted or replaced.",
+    "portfolioExecutable": false
+  },
+  "id": "PORTFOLIO_SAFE",
+  "tags": [
+    {
+      "name": "B2B Portfolio"
+    }
+  ]
+}
