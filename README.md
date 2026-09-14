@@ -10,6 +10,24 @@ It was designed around a real commercial problem: professional prospects could a
 
 The automation prepares the opportunity before human involvement.
 
+---
+
+## Production case study
+
+> *Personal technical case study documenting my implementation work.*
+
+> *This is not an official Davines open-source repository.*
+
+<img
+  src="assets/screenshots/08-case-study-summary.png"
+  alt="Davines B2B qualification, human handoff and CRM case study"
+  width="100%"
+>
+
+This case study documents a production B2B WhatsApp system connecting conversational AI, deterministic routing, persistent state, product knowledge, progressive lead qualification, CRM operations and human sales follow-up.
+
+---
+
 ```text
 Meta Ads
     ↓
@@ -104,23 +122,18 @@ The AI model was one component of the system rather than the entire application.
 Language model
         ↓
 Natural-language flexibility
-
 Deterministic routing
         ↓
 Business rules
-
 Supabase
         ↓
 Application state
-
 RAG
         ↓
 Domain knowledge
-
 CRM
         ↓
 Commercial operations
-
 Human sales
         ↓
 Relationship and close
@@ -230,7 +243,6 @@ estado_conversacion
 estado
 bot_pausado
 asesor_solicitado
-
 tipo
 salon
 ciudad
@@ -242,7 +254,6 @@ contacto
 marca
 driver
 horario
-
 lineas
 lineas_pendientes
 multimedia_enviado
@@ -292,7 +303,6 @@ The CRM acts as a commercial operations layer rather than the source of live con
 Supabase
         ↓
 Machine / application state
-
 Google Sheets
         ↓
 Human-reviewed commercial operations
@@ -376,9 +386,7 @@ This prevents the normal acquisition flow from blindly restarting after commerci
                        HUMAN REVIEW
                              ↓
                         SALES TEAM
-
 Outbound response:
-
 AI / Router
      ↓
 n8n
@@ -387,6 +395,36 @@ YCloud
      ↓
 WhatsApp
 ```
+
+### Production workflow
+
+<img
+  src="assets/screenshots/01-n8n-workflow.png"
+  alt="Production n8n workflow"
+  width="100%"
+>
+
+The production workflow orchestrates WhatsApp messaging, deterministic routing, AI reasoning, application state, RAG retrieval, CRM persistence and human escalation.
+
+### Persistent conversation state
+
+<img
+  src="assets/screenshots/02-supabase-state.png"
+  alt="Supabase persistent conversation state"
+  width="420"
+>
+
+Conversation state is persisted outside the language model so the system can preserve qualification progress, delivery history and handoff status across multiple WhatsApp turns.
+
+### RAG knowledge pipeline
+
+<img
+  src="assets/screenshots/03-rag-vector-store.png"
+  alt="RAG ingestion and Supabase Vector Store"
+  width="760"
+>
+
+Technical and commercial knowledge is prepared, embedded and stored for contextual retrieval during conversations.
 
 ---
 
@@ -411,6 +449,67 @@ WhatsApp
 ## Production evidence
 
 Different metrics represent different layers and periods of the system and should not be treated as one linear funnel.
+
+### Real WhatsApp execution
+
+<table>
+<tr>
+<td width="50%" align="center">
+<strong>Price-list delivery</strong>
+
+<img
+  src="assets/screenshots/05-whatsapp-price-delivery.png"
+  alt="Automated WhatsApp price list delivery"
+  width="330"
+>
+
+</td>
+<td width="50%" align="center">
+<strong>Context-aware product material</strong>
+
+<img
+  src="assets/screenshots/06-whatsapp-rag-multimedia.png"
+  alt="Context-aware WhatsApp technical material delivery"
+  width="330"
+>
+
+</td>
+</tr>
+</table>
+### Qualification → human handoff
+
+<img
+  src="assets/screenshots/07-qualification-handoff.png"
+  alt="B2B qualification and human handoff"
+  width="100%"
+>
+
+The system progressively captures commercial context instead of forcing prospects through a rigid form, then transfers qualified conversations to human sales follow-up.
+
+### CRM operations
+
+<img
+  src="assets/screenshots/04-crm-operations.png"
+  alt="Sanitized B2B CRM qualification evidence"
+  width="100%"
+>
+
+### Raw sanitized production evidence
+
+The following screenshots preserve the appearance of the operational tools while removing sensitive identifiers.
+
+<img
+  src="assets/screenshots/09-crm-raw-redacted.png"
+  alt="Redacted production CRM"
+  width="850"
+>
+
+<br><br>
+<img
+  src="assets/screenshots/10-ycloud-raw-handoff-redacted.png"
+  alt="Redacted YCloud human handoff"
+  width="850"
+>
 
 ### Supabase state snapshot
 
@@ -464,10 +563,10 @@ One analyzed campaign period recorded:
 
 | Metric | Result |
 |---|---:|
-| ROAS | ~41x |
+| ROAS | \~41x |
 | Meta Ads spend | S/836 |
 | Attributed sales | S/34,571 |
-| New commercial openings | ~3 → 10 in one month |
+| New commercial openings | \~3 → 10 in one month |
 
 Lead qualification time was also reduced from hours to minutes.
 
@@ -566,13 +665,9 @@ Data protection
 PostgreSQL chat memory
         ↓
 What was said?
-
-
 Supabase sesiones_bot
         ↓
 What does the application know?
-
-
 Supabase documents
         ↓
 What does the system know about Davines?
